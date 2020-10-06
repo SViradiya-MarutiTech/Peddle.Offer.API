@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using Peddle.Offer.Application.UseCases.Offers.Commands.CreateOffer;
-using Peddle.Offer.Application.UseCases.Offers.Queries.GetOfferById;
-using Peddle.Offer.Domain.Entities;
+﻿using Application.UseCases.Offers.Commands.CreateOffer;
+using Application.UseCases.Offers.Queries.GetOfferById;
+using AutoMapper;
+using Domain.Entities;
 
-namespace Peddle.Offer.Application.Mappings
+namespace Application.Mappings
 {
     public class MappingProfile : Profile
     {

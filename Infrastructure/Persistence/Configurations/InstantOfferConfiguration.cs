@@ -1,8 +1,8 @@
-﻿using Peddle.Offer.Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Peddle.Offer.Infrastructure.Persistence.Configurations
+namespace Infrastructure.Persistence.Configurations
 {
     public class InstantOfferConfiguration : IEntityTypeConfiguration<InstantOffer>
     {

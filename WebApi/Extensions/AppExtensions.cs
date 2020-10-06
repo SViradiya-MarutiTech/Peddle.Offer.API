@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Peddle.Offer.Api.Middlewares;
+﻿using Api.Middlewares;
+using Microsoft.AspNetCore.Builder;
 
-namespace Peddle.Offer.Api.Extensions
+namespace Api.Extensions
 {
     public static class AppExtensions
     {

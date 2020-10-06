@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Peddle.Offer.Domain.Dtos
+namespace Domain.Dtos
 {
     public class Response<T>
     {

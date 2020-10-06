@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Peddle.Offer.Application.Exceptions;
+using Application.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Peddle.Offer.Domain.Dtos;
+using Domain.Dtos;
 
-namespace Peddle.Offer.Api.Middlewares
+namespace Api.Middlewares
 {
     public class ErrorHandlerMiddleware
     {

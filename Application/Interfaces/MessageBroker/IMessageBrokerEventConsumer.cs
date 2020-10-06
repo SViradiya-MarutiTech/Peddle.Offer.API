@@ -1,7 +1,7 @@
 ﻿using Peddle.MessageBroker.Subscriber;
-using Peddle.Offer.Domain.Dtos;
+using Domain.Dtos;
 
-namespace Peddle.Offer.Application.Interfaces.MessageBroker
+namespace Application.Interfaces.MessageBroker
 {
     public interface IMessageBrokerEventConsumer
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using Peddle.Offer.Domain.Entities;
+using Domain.Entities;
 
-namespace Peddle.Offer.Infrastructure.Persistence
+namespace Infrastructure.Persistence
 {
     public class ApplicationDbContext :DbContext
     {

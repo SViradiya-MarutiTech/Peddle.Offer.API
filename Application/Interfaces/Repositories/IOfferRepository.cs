@@ -1,6 +1,6 @@
-﻿using Peddle.Offer.Domain.Entities;
+﻿using Domain.Entities;
 
-namespace Peddle.Offer.Application.Interfaces.Repositories
+namespace Application.Interfaces.Repositories
 {
    public interface IOfferRepository:IGenericRepositoryAsync<InstantOffer>
     {

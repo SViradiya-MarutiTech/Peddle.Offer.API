@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Peddle.Offer.Api.Extensions;
+using Api.Extensions;
 
-namespace Peddle.Offer.Api
+namespace Api
 {
     public class Startup
     {

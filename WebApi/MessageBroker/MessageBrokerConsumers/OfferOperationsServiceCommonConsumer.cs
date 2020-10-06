@@ -1,13 +1,13 @@
 ﻿using MediatR;
-using Peddle.Offer.Application.Interfaces.MessageBroker;
+using Application.Interfaces.MessageBroker;
 using System.Threading.Tasks;
-using Peddle.Offer.Domain.Dtos;
+using Domain.Dtos;
 using Peddle.MessageBroker.Subscriber;
 using System;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Peddle.Offer.API.MessageBrokerConsumers
+namespace Api.MessageBrokerConsumers
 {
     public class OfferOperationsServiceCommonConsumer : IMessageBrokerEventHandler
     {

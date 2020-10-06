@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Peddle.Offer.Application.Exceptions
+namespace Application.Exceptions
 {
     public class ApiException : Exception
     {

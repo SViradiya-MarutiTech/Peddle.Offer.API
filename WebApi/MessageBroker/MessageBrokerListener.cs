@@ -8,11 +8,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Peddle.MessageBroker.Subscriber;
-using Peddle.Offer.API.MessageBrokerConsumers;
-using Peddle.Offer.Application.Interfaces.MessageBroker;
-using Peddle.Offer.Domain.Dtos;
+using Api.MessageBrokerConsumers;
+using Application.Interfaces.MessageBroker;
+using Domain.Dtos;
 
-namespace Peddle.Offer.Api.MessageBroker
+namespace Api.MessageBroker
 {
     public class MessageBrokerListener : IHostedService
     {

@@ -4,14 +4,14 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Peddle.MessageBroker.Publisher;
-using Peddle.Offer.Application.Interfaces.MessageBroker;
-using Peddle.Offer.Domain.Entities;
-using Peddle.Offer.Domain.Dtos;
+using Domain.Entities;
+using Domain.Dtos;
 using System.Xml.Serialization;
 using System.IO;
-using Peddle.Offer.Application.Interfaces.Repositories;
+using Application.Interfaces.MessageBroker;
+using Application.Interfaces.Repositories;
 
-namespace Peddle.Offer.Application.UseCases.Offers.Queries.GetOfferById
+namespace Application.UseCases.Offers.Queries.GetOfferById
 {
     public class GetOfferById : IRequest<InstantOffer>
     {

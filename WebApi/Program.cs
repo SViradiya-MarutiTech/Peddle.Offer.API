@@ -1,9 +1,9 @@
+using Api.MessageBroker;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Peddle.Offer.Api.MessageBroker;
 
-namespace Peddle.Offer.Api
+namespace Api
 {
     public class Program
     {

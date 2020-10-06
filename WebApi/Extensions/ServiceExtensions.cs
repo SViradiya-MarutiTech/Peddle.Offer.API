@@ -12,17 +12,17 @@ using Microsoft.Extensions.Options;
 using Peddle.MessageBroker.RabbitMQ.Subscriber;
 using Peddle.MessageBroker.Serializer;
 using Peddle.MessageBroker.Subscriber;
-using Peddle.Offer.Application.Common.Behaviours;
-using Peddle.Offer.Application.Interfaces.ExternalServices;
-using Peddle.Offer.Application.Interfaces.MessageBroker;
-using Peddle.Offer.Application.Interfaces.Repositories;
-using Peddle.Offer.Domain.Dtos;
-using Peddle.Offer.Infrastructure.ExternalServices;
-using Peddle.Offer.Infrastructure.MessageBroker;
-using Peddle.Offer.Infrastructure.Persistence;
-using Peddle.Offer.Infrastructure.Repositories;
+using Application.Common.Behaviours;
+using Application.Interfaces.ExternalServices;
+using Application.Interfaces.MessageBroker;
+using Application.Interfaces.Repositories;
+using Domain.Dtos;
+using Infrastructure.ExternalServices;
+using Infrastructure.MessageBroker;
+using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 
-namespace Peddle.Offer.Api.Extensions
+namespace Api.Extensions
 {
     public static class ServiceExtensions
     {
@@ -33,7 +33,7 @@ namespace Peddle.Offer.Api.Extensions
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddMediatR(AppDomain.CurrentDomain.Load("Peddle.Offer.Application"));
+            services.AddMediatR(AppDomain.CurrentDomain.Load("Application"));
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));

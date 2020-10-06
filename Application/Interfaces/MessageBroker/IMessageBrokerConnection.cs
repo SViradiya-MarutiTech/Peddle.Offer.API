@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Peddle.Offer.Application.Interfaces.MessageBroker
+namespace Application.Interfaces.MessageBroker
 {
     public interface IMessageBrokerConnection:IDisposable
     {

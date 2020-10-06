@@ -1,10 +1,10 @@
-﻿using Peddle.Offer.Domain.Dtos;
+﻿using Domain.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Peddle.Offer.Application.Interfaces.ExternalServices
+namespace Application.Interfaces.ExternalServices
 {
     public interface IOfferOperationService
     {

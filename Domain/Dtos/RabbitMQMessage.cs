@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Peddle.Offer.Domain.Dtos
+namespace Domain.Dtos
 {
     public class RabbitMQMessage
     {

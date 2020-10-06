@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Peddle.Offer.Application.Interfaces.Repositories;
-using Peddle.Offer.Infrastructure.Persistence;
+using Application.Interfaces.Repositories;
+using Infrastructure.Persistence;
 
-namespace Peddle.Offer.Infrastructure.Repositories
+namespace Infrastructure.Repositories
 {
     public class GenericRepositoryAsync<T> : IGenericRepositoryAsync<T> where T : class
     {

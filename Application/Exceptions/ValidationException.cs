@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Peddle.Offer.Application.Exceptions
+namespace Application.Exceptions
 {
     public class ValidationException : Exception
     {

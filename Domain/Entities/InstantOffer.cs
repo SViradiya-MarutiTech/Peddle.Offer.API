@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Peddle.Offer.Domain.Entities
+namespace Domain.Entities
 {
     public class InstantOffer
     {

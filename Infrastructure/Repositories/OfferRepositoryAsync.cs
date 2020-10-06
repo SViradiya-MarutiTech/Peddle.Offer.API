@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Peddle.Offer.Application.Interfaces.Repositories;
-using Peddle.Offer.Domain.Entities;
-using Peddle.Offer.Infrastructure.Persistence;
+using Application.Interfaces.Repositories;
+using Infrastructure.Persistence;
+using Domain.Entities;
 
-namespace Peddle.Offer.Infrastructure.Repositories
+namespace Infrastructure.Repositories
 {
     public class OfferRepositoryAsync : GenericRepositoryAsync<InstantOffer>, IOfferRepository
 

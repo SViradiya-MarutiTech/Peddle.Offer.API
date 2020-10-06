@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Peddle.MessageBroker.RabbitMQ.Connection;
-using Peddle.Offer.Application.Interfaces.MessageBroker;
-using Peddle.Offer.Domain.Dtos;
+using Application.Interfaces.MessageBroker;
+using Domain.Dtos;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 
-namespace Peddle.Offer.Infrastructure.MessageBroker
+namespace Infrastructure.MessageBroker
 {
     public class MessageBrokerConnection : IMessageBrokerConnection
     {

@@ -4,10 +4,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Peddle.MessageBroker.RabbitMQ.Publisher;
 using Peddle.MessageBroker.Serializer;
-using Peddle.Offer.Application.Interfaces.MessageBroker;
-using Peddle.Offer.Domain.Dtos;
+using Application.Interfaces.MessageBroker;
+using Domain.Dtos;
 
-namespace Peddle.Offer.Infrastructure.MessageBroker
+namespace Infrastructure.MessageBroker
 {
     public class MessageBrokerPublisher : IMessageBrokerPublisher
     {

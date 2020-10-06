@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces.Repositories;
 using AutoMapper;
 using MediatR;
-using Peddle.Offer.Application.Interfaces.Repositories;
-using Peddle.Offer.Domain.Entities;
+using Domain.Entities;
 
-namespace Peddle.Offer.Application.UseCases.Offers.Commands.CreateOffer
+namespace Application.UseCases.Offers.Commands.CreateOffer
 {
     public class CreateOfferCommand : IRequest<int>
     {

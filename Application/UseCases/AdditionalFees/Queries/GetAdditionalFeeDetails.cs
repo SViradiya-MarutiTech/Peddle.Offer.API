@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using MediatR;
-using Peddle.Offer.Application.Interfaces.ExternalServices;
-using Peddle.Offer.Domain.Dtos;
+using Domain.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces.ExternalServices;
 
-namespace Peddle.Offer.Application.UseCases.AdditionalFees.Queries
+namespace Application.UseCases.AdditionalFees.Queries
 {
     public class GetAdditionalFeeDetails : IRequest<AdditionalFeesDetailsDto[]>
     {

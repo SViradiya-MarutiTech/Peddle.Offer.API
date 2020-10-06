@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Peddle.Offer.Application.Interfaces.Repositories
+namespace Application.Interfaces.Repositories
 {
    public interface IGenericRepositoryAsync<T> where T : class
     {

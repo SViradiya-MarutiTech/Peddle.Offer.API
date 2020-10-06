@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Peddle.Offer.Application.UseCases.Offers.Commands.CreateOffer;
-using Peddle.Offer.Application.UseCases.Offers.Queries.GetOfferById;
+using Application.UseCases.Offers.Commands.CreateOffer;
+using Application.UseCases.Offers.Queries.GetOfferById;
 using Peddle.Offer.WebApi.Controllers;
 
-namespace Peddle.Offer.Api.Controllers.v1
+namespace Api.Controllers.v1
 {
     [ApiVersion("1.0")]
     public class OfferController : BaseApiController

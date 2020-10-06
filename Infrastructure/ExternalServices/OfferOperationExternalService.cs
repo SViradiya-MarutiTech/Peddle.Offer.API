@@ -1,10 +1,10 @@
 ﻿using OfferOperationService;
-using Peddle.Offer.Application.Interfaces.ExternalServices;
-using Peddle.Offer.Domain.Dtos;
+using Application.Interfaces.ExternalServices;
+using Domain.Dtos;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
-namespace Peddle.Offer.Infrastructure.ExternalServices
+namespace Infrastructure.ExternalServices
 {
     public class OfferOperationExternalService : IOfferOperationService
     {

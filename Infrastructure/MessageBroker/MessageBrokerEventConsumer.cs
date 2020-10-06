@@ -2,13 +2,13 @@
 using Peddle.MessageBroker.RabbitMQ.Subscriber;
 using Peddle.MessageBroker.Serializer;
 using Peddle.MessageBroker.Subscriber;
-using Peddle.Offer.Application.Interfaces.MessageBroker;
-using Peddle.Offer.Domain.Dtos;
+using Application.Interfaces.MessageBroker;
+using Domain.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Peddle.Offer.Infrastructure.MessageBroker
+namespace Infrastructure.MessageBroker
 {
     public class MessageBrokerEventConsumer : IMessageBrokerEventConsumer
     {
