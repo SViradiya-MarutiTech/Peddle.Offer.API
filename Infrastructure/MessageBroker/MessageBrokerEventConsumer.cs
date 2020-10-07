@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Infrastructure.MessageBroker
 {
-    public class MessageBrokerEventConsumer : IMessageBrokerEventConsumer
+    public class MessageBrokerEventConsumer 
     {
         private readonly IMessageBrokerConnection _messageBrokerConnection;
         private readonly ILoggerFactory _loggerFactory;

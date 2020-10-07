@@ -21,11 +21,17 @@ using Infrastructure.ExternalServices;
 using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
+using Api.MessageBrokerConsumers;
+using Api.EventHandlers;
 
 namespace Api.Extensions
 {
     public static class ServiceExtensions
     {
+        #region QueueNames
+        private const string OFFER_OPERATIONS_SERVICE_COMMON_CONSUMER = "OfferOperationsServiceCommonConsumer";
+
+        #endregion
         public static void AddWebApiServicesExtension(this IServiceCollection services,
             IConfiguration configuration)
         {
@@ -57,7 +63,7 @@ namespace Api.Extensions
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
         }
 
-        private static IServiceCollection RegisterMessageBrokerConnection(this IServiceCollection services,
+        private static void RegisterMessageBrokerConnection(this IServiceCollection services,
             IConfiguration configuration)
         {
             services.Configure<MessageBrokerConnectionConfiguration>(
@@ -67,12 +73,11 @@ namespace Api.Extensions
                 service.GetRequiredService<ILogger<MessageBrokerConnection>>(),
                 service.GetRequiredService<ILoggerFactory>()
             ));
-            return services;
         }
 
-        private static IServiceCollection RegisterMessageBrokerPublishers(this IServiceCollection services)
+        private static void RegisterMessageBrokerPublishers(this IServiceCollection services)
         {
-          
+
             services.AddSingleton<IMessageBrokerPublisher>(provider =>
             {
                 MessageBrokerPublisher messageBrokerPublisher = new MessageBrokerPublisher(
@@ -82,24 +87,35 @@ namespace Api.Extensions
                 );
                 return messageBrokerPublisher;
             });
-            return services;
         }
 
-        private static IServiceCollection RegisterMessageBrokerConsumers(this IServiceCollection services)
+        private static void RegisterMessageBrokerConsumers(this IServiceCollection services)
         {
             // Register Message Broker Consumers
-            services.AddTransient(typeof(IMessageBrokerEventConsumer), typeof(MessageBrokerEventConsumer));
+
             services.AddTransient<IMessageBrokerSubscriber<RabbitMQMessage>>(service =>
                 new ExchangeSubscriber<RabbitMQMessage>(
                     service.GetRequiredService<IMessageBrokerConnection>().RabbitMQConnection,
-                    service.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.QueueName,
+                    OFFER_OPERATIONS_SERVICE_COMMON_CONSUMER,
                     service.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.ExchangeName,
                     service.GetRequiredService<ILogger<ExchangeSubscriber<RabbitMQMessage>>>(),
                     service.GetRequiredService<ISerializer<RabbitMQMessage>>()
                 ));
 
-            return services;
-            //Register Event Handlers
+            //Add new Consumer class same as below.
+            services.AddTransient<IMessageBrokerEventConsumer>(serviceProvider => new OfferOperationsServiceCommonConsumer(
+                    serviceProvider.GetRequiredService<IMediator>(),
+                    serviceProvider.GetRequiredService<IMessageBrokerSubscriber<RabbitMQMessage>>(),
+                    serviceProvider.GetRequiredService<ILogger<OfferOperationsServiceCommonConsumer>>(),
+                    serviceProvider.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value
+                ));
+            //One consumer event handler to start 
+            services.AddTransient<IMessageBrokerEventHandler>(service => new MessageBrokerEventHandler(
+                new IMessageBrokerEventConsumer[] {
+                    service.GetRequiredService<IMessageBrokerEventConsumer>()
+                }));
+
+
         }
     }
 }

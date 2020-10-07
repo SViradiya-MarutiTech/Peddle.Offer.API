@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Api.MessageBrokerConsumers
 {
-    public class OfferOperationsServiceCommonConsumer : IMessageBrokerEventHandler
+    public class OfferOperationsServiceCommonConsumer : IMessageBrokerEventConsumer
     {
         private readonly IMediator _mediator;
         private readonly IMessageBrokerSubscriber<RabbitMQMessage> _consumer;
@@ -19,8 +19,7 @@ namespace Api.MessageBrokerConsumers
             IMediator mediator,
             IMessageBrokerSubscriber<RabbitMQMessage> consumer,
             ILogger<OfferOperationsServiceCommonConsumer> logger,
-            MessageBrokerConnectionConfiguration messageBrokerConfiguration,
-            IMessageBrokerEventConsumer messageBrokerEventConsumer
+            MessageBrokerConnectionConfiguration messageBrokerConfiguration
         )
         {
             _mediator = mediator;
@@ -34,7 +33,6 @@ namespace Api.MessageBrokerConsumers
 
             var exchange = messageBrokerConfiguration.ExchangeName;
             var queue = "OfferOperationsServiceCommonConsumer";
-            _consumer = messageBrokerEventConsumer.GetExchangeSubscriber(queue, exchange);
             routingKeys.ForEach(SubscribeToEvent);
         }
 

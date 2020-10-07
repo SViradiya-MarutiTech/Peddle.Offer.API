@@ -55,19 +55,9 @@ namespace Api.MessageBroker
         {
             try
             {
-                List<IMessageBrokerEventHandler> consumers = new List<IMessageBrokerEventHandler>();
-                consumers.Add(new OfferOperationsServiceCommonConsumer(
-                    serviceProvider.GetRequiredService<IMediator>(),
-                    serviceProvider.GetRequiredService<IMessageBrokerSubscriber<RabbitMQMessage>>(),
-                    _factory.CreateLogger<OfferOperationsServiceCommonConsumer>(),
-                    serviceProvider.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value,
-                    serviceProvider.GetRequiredService<IMessageBrokerEventConsumer>()
-                ));
-                //List of consumers.
-                foreach (var consumer in consumers)
-                {
-                    consumer.StartSubscriber();
-                }
+                var consumers = serviceProvider.GetRequiredService<IMessageBrokerEventHandler>();
+                consumers.StartSubscriber();
+
             }
             catch (Exception exception)
             {

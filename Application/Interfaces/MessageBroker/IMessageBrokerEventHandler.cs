@@ -6,5 +6,6 @@ namespace Application.Interfaces.MessageBroker
     {
         void SubscribeToEvent(string eventName);
         void StartSubscriber();
+       
     }
 }
