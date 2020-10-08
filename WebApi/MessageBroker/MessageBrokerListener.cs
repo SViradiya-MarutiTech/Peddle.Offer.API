@@ -2,29 +2,24 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Peddle.MessageBroker.Subscriber;
-using Api.MessageBrokerConsumers;
 using Application.Interfaces.MessageBroker;
-using Domain.Dtos;
 
 namespace Api.MessageBroker
 {
     public class MessageBrokerListener : IHostedService
     {
         private readonly ILogger<MessageBrokerListener> _log;
-        private IServiceProvider serviceProvider;
+        private readonly IEnumerable<IMessageBrokerEventConsumer> _consumers;
         private ILoggerFactory _factory;
 
-        public MessageBrokerListener(ILogger<MessageBrokerListener> log, IServiceProvider serviceProvider,
+        public MessageBrokerListener(ILogger<MessageBrokerListener> log,
+            IEnumerable<IMessageBrokerEventConsumer> consumers,
             ILoggerFactory factory)
         {
             _log = log;
-            this.serviceProvider = serviceProvider;
+            _consumers = consumers;
             _factory = factory;
         }
 
@@ -55,9 +50,10 @@ namespace Api.MessageBroker
         {
             try
             {
-                var consumers = serviceProvider.GetRequiredService<IMessageBrokerEventHandler>();
-                consumers.StartSubscriber();
-
+                foreach (var consumer in _consumers)
+                {
+                    consumer.StartSubscriber();
+                }
             }
             catch (Exception exception)
             {
@@ -65,10 +61,14 @@ namespace Api.MessageBroker
                     $"Failed to start message broker subscribers. \n Message: {exception.Message}");
             }
         }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
             //TODO: Write logic to stop consumer
+            foreach (var consumer in _consumers)
+            {
+                consumer.Dispose();
+            }
+
             return Task.CompletedTask;
         }
     }

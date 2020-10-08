@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reflection;
+using Api.MessageBroker.MessageBrokerConsumers;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,24 +21,35 @@ using Infrastructure.ExternalServices;
 using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
-using Api.MessageBrokerConsumers;
-using Api.EventHandlers;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Application.Interfaces;
+using Peddle.Foundation.CacheManager.Core;
+using Application.Mappings;
 
 namespace Api.Extensions
 {
     public static class ServiceExtensions
     {
         #region QueueNames
-        private const string OFFER_OPERATIONS_SERVICE_COMMON_CONSUMER = "OfferOperationsServiceCommonConsumer";
+
+        private const string OfferOperationQueueName = "OfferOperationsServiceCommonConsumer";
 
         #endregion
+
         public static void AddWebApiServicesExtension(this IServiceCollection services,
             IConfiguration configuration)
         {
             services.AddSingleton(typeof(ISerializer<>), typeof(XmlSerializer<>));
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+              
+            });
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddValidatorsFromAssembly(AppDomain.CurrentDomain.Load("Application"));
             services.AddMediatR(AppDomain.CurrentDomain.Load("Application"));
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
@@ -54,8 +65,14 @@ namespace Api.Extensions
                 config.ReportApiVersions = true;
             });
             services.AddScoped(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
-            services.AddTransient(typeof(IOfferRepository), typeof(OfferRepositoryAsync));
+            services.AddTransient(typeof(IInstantOfferRepository), typeof(OfferRepositoryAsync));
+            services.RegisterInfraStructure(configuration);
 
+            services.RegisterCaching(configuration);
+        }
+
+        private static void RegisterInfraStructure(this IServiceCollection services, IConfiguration configuration)
+        {
             services.AddTransient<IOfferOperationService, OfferOperationExternalService>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -68,6 +85,7 @@ namespace Api.Extensions
         {
             services.Configure<MessageBrokerConnectionConfiguration>(
                 configuration.GetSection("MessageBrokerConfiguration"));
+
             services.AddTransient<IMessageBrokerConnection>(service => new MessageBrokerConnection(
                 "publisher-connection", service.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>(),
                 service.GetRequiredService<ILogger<MessageBrokerConnection>>(),
@@ -77,7 +95,6 @@ namespace Api.Extensions
 
         private static void RegisterMessageBrokerPublishers(this IServiceCollection services)
         {
-
             services.AddSingleton<IMessageBrokerPublisher>(provider =>
             {
                 MessageBrokerPublisher messageBrokerPublisher = new MessageBrokerPublisher(
@@ -96,26 +113,28 @@ namespace Api.Extensions
             services.AddTransient<IMessageBrokerSubscriber<RabbitMQMessage>>(service =>
                 new ExchangeSubscriber<RabbitMQMessage>(
                     service.GetRequiredService<IMessageBrokerConnection>().RabbitMQConnection,
-                    OFFER_OPERATIONS_SERVICE_COMMON_CONSUMER,
+                    OfferOperationQueueName,
                     service.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.ExchangeName,
                     service.GetRequiredService<ILogger<ExchangeSubscriber<RabbitMQMessage>>>(),
                     service.GetRequiredService<ISerializer<RabbitMQMessage>>()
                 ));
 
             //Add new Consumer class same as below.
-            services.AddTransient<IMessageBrokerEventConsumer>(serviceProvider => new OfferOperationsServiceCommonConsumer(
-                    serviceProvider.GetRequiredService<IMediator>(),
-                    serviceProvider.GetRequiredService<IMessageBrokerSubscriber<RabbitMQMessage>>(),
-                    serviceProvider.GetRequiredService<ILogger<OfferOperationsServiceCommonConsumer>>(),
-                    serviceProvider.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value
-                ));
-            //One consumer event handler to start 
-            services.AddTransient<IMessageBrokerEventHandler>(service => new MessageBrokerEventHandler(
-                new IMessageBrokerEventConsumer[] {
-                    service.GetRequiredService<IMessageBrokerEventConsumer>()
-                }));
+            services.TryAddEnumerable(
+                new[]
+                {
+                    ServiceDescriptor.Transient<IMessageBrokerEventConsumer, OfferOperationsServiceCommonConsumer>(),
+                    //TODO: Add Other Consumer classes as above
+                }
+            );
+        }
 
 
+        private static void RegisterCaching(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<CacheServiceConfiguration>(
+               configuration.GetSection("CacheServiceConfiguration"));
+            services.AddSingleton(typeof(ICacheService<>), typeof(CacheService<>));
         }
     }
 }

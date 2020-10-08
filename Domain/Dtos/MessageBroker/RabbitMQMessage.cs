@@ -2,6 +2,8 @@
 
 namespace Domain.Dtos
 {
+
+    //TODO:RabbitMQMessage should be used from RabbitMQUtility library.
     public class RabbitMQMessage
     {
         public string EventType { get; set; }

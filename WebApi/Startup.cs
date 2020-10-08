@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Api.Extensions;
+using Api.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace Api
 {
@@ -18,7 +20,13 @@ namespace Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                //Register filter for globally
+                config.Filters.Add<LogActionFilter>();
+                config.Filters.Add<ModelValidationFilter>();
+            });
+            services.AddLogging(options => { options.AddDebug(); });
             services.AddWebApiServicesExtension(Configuration);
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

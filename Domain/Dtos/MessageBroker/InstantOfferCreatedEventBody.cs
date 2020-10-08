@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Entities
+namespace Domain.Dtos.MessageBroker
 {
-    public class InstantOffer
+   public class InstantOfferCreatedEventBody
     {
         public int Id { get; set; }
         public double OfferAmount { get; set; }

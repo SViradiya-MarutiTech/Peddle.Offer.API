@@ -1,20 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="9.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Peddle.MessageBroker, Version=1.4.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\WebApi\Assemblies\Peddle.MessageBroker.dll</HintPath>
-    </Reference>
-    <Reference Include="Peddle.MessageBroker.RabbitMQ, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\WebApi\Assemblies\Peddle.MessageBroker.RabbitMQ.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

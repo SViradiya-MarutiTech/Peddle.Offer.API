@@ -1,6 +1,6 @@
-﻿using Application.UseCases.Offers.Commands.CreateOffer;
-using Application.UseCases.Offers.Queries.GetOfferById;
+﻿using Application.Models;
 using AutoMapper;
+using Domain.Dtos.MessageBroker;
 using Domain.Entities;
 
 namespace Application.Mappings
@@ -9,8 +9,10 @@ namespace Application.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<CreateOfferCommand, InstantOffer>();
-            CreateMap<GetOfferById, InstantOffer>();
+            CreateMap<InstantOfferCreatedEventBody, CreateInstantOfferRequest>();
+
+            CreateMap<CreateInstantOfferRequest, InstantOffer>();
+            CreateMap<GetInstantOfferRequest, InstantOffer>();
         }
     }
 }

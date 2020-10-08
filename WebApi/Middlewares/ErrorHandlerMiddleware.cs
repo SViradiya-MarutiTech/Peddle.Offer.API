@@ -7,16 +7,18 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Domain.Dtos;
+using Microsoft.Extensions.Logging;
 
 namespace Api.Middlewares
 {
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-
-        public ErrorHandlerMiddleware(RequestDelegate next)
+        private readonly ILogger<ErrorHandlerMiddleware> _logger;
+        public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -57,8 +59,8 @@ namespace Api.Middlewares
                 }
 
                 var result = JsonSerializer.Serialize(responseModel);
-
-                await response.WriteAsync(result);
+                _logger.LogError(result);
+                 await response.WriteAsync(result);
             }
         }
     }

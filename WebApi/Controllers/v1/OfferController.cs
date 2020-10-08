@@ -1,27 +1,51 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Application.UseCases.Offers.Commands.CreateOffer;
-using Application.UseCases.Offers.Queries.GetOfferById;
 using Peddle.Offer.WebApi.Controllers;
+using System;
+using Microsoft.Extensions.Logging;
+using Application.Models;
 
 namespace Api.Controllers.v1
 {
     [ApiVersion("1.0")]
     public class OfferController : BaseApiController
     {
-        
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get([FromQuery]GetOfferById offerbyId)
+
+        private ILogger<OfferController> _logger;
+
+        public OfferController(ILogger<OfferController> logger)
         {
-            return Ok(await Mediator.Send(offerbyId));
+            _logger = logger;
         }
-        
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Post(CreateOfferCommand command)
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
         {
-            return Ok(await Mediator.Send(command));
+            try
+            {
+                return Ok(await Mediator.Send(new GetInstantOfferRequest { InstantOfferId = id }));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Some thing went wrong,Exception:{ex}");
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(CreateInstantOfferRequest command)
+        {
+            try
+            {
+                return Ok(await Mediator.Send(command));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Some thing went wrong, Exception:{ex.Message}");
+                throw;
+            }
         }
     }
 }
