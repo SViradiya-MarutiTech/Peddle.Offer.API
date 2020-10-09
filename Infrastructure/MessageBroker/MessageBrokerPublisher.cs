@@ -6,6 +6,7 @@ using Peddle.MessageBroker.RabbitMQ.Publisher;
 using Peddle.MessageBroker.Serializer;
 using Application.Interfaces.MessageBroker;
 using Domain.Dtos;
+using Peddle.MessageBroker.RabbitMQ.Connection;
 
 namespace Infrastructure.MessageBroker
 {
@@ -13,13 +14,13 @@ namespace Infrastructure.MessageBroker
     {
         private readonly ILogger _log;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IMessageBrokerConnection _messageBrokerPublisherConnection;
+        private readonly IRabbitMqConnection _messageBrokerConnection;
         private readonly MessageBrokerConnectionConfiguration _configurationSettings;
 
-        public MessageBrokerPublisher(IMessageBrokerConnection messageBrokerConnection, ILoggerFactory loggerFactory,
+        public MessageBrokerPublisher(IRabbitMqConnection messageBrokerConnection, ILoggerFactory loggerFactory,
             IOptions<MessageBrokerConnectionConfiguration> configuration)
         {
-            _messageBrokerPublisherConnection = messageBrokerConnection;
+            _messageBrokerConnection = messageBrokerConnection;
             _loggerFactory = loggerFactory;
             _log = _loggerFactory.CreateLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
             _configurationSettings = configuration.Value;
@@ -40,11 +41,11 @@ namespace Infrastructure.MessageBroker
         {
             try
             {
-                //TODO: Remove after Peddle.Common library is integrated
+                //TODO: Use Peddle.Common library
                 message.RequestSource = "OfferOperationsService";
 
                 var exchangePublisher = new DeadLetterQueuePublisher<RabbitMQMessage>(
-                    _messageBrokerPublisherConnection.RabbitMQConnection,
+                    _messageBrokerConnection,
                     deadLetterExchangeName, exchangeName, retryQueueName, routingKey.ToLower(), time,
                     _loggerFactory.CreateLogger<DeadLetterQueuePublisher<RabbitMQMessage>>(),
                     new XmlSerializer<RabbitMQMessage>()
@@ -62,7 +63,7 @@ namespace Infrastructure.MessageBroker
             try
             {
                 var exchangePublisher = new QueuePublisher<T>(
-                    _messageBrokerPublisherConnection.RabbitMQConnection,
+                    _messageBrokerConnection,
                     queueName, _loggerFactory.CreateLogger<QueuePublisher<T>>(),
                     new XmlSerializer<T>());
                 exchangePublisher.Publish(rabbitMqMessage);
@@ -81,7 +82,7 @@ namespace Infrastructure.MessageBroker
                 //TODO: Remove after Peddle.Common library is integrated
                 message.RequestSource = "OfferOperationsService";
                 var exchangePublisher = new ExchangePublisher<RabbitMQMessage>(
-                    _messageBrokerPublisherConnection.RabbitMQConnection,
+                    _messageBrokerConnection,
                     exchange, message.EventType.ToLower(),
                     _loggerFactory.CreateLogger<ExchangePublisher<RabbitMQMessage>>(),
                     new XmlSerializer<RabbitMQMessage>()
@@ -90,6 +91,8 @@ namespace Infrastructure.MessageBroker
             }
             catch (Exception exception)
             {
+                _log.LogWarning(exception, null, $"Failed to Publish message in {exchange} exchange");
+
             }
         }
     }

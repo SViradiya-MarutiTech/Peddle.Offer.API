@@ -1,4 +1,5 @@
 ﻿using Domain.Dtos;
+using Domain.Dtos.ExternalServices;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Application.Interfaces.ExternalServices
 {
     public interface IOfferOperationService
     {
-        Task<AdditionalFeesDetailsDto[]> GetOfferDatabaseIds();
+        Task<OfferDatabaseIdDto> GetOfferDatabaseIds(GetOfferDatabaseIdDto offerDatabaseIdDto);
     }
 }

@@ -3,6 +3,8 @@ using Application.Interfaces.ExternalServices;
 using Domain.Dtos;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using Domain.Dtos.ExternalServices;
+using System.Linq;
 
 namespace Infrastructure.ExternalServices
 {
@@ -14,35 +16,31 @@ namespace Infrastructure.ExternalServices
 
         public IOfferService GetServiceProxy()
         {
-            //TODO following code should be replaced after integrating  Library,It is just example, and Take URl from HashiVault.
             BasicHttpBinding httpBinding = new BasicHttpBinding();
-            EndpointAddress endpoint = new EndpointAddress("http://localhost:51049/WebServices/OfferService.svc");
+            EndpointAddress endpoint = new EndpointAddress("<YOUR SVC URL>");
             ChannelFactory<IOfferService> factory = new ChannelFactory<IOfferService>(httpBinding, endpoint);
 
             return factory.CreateChannel();
         }
 
-        public async Task<AdditionalFeesDetailsDto[]> GetOfferDatabaseIds()
+        public async Task<OfferDatabaseIdDto> GetOfferDatabaseIds(GetOfferDatabaseIdDto getOfferDatabaseIdDto)
         {
-            var request = new GetAdditionalFeesDetailsRequestMessage()
+            var request = new GetOfferDatabaseIdsRequestMessage()
             {
+                //Use Peddle.Common for setting properties.
                 AdminSiteUser = 1,
                 RequestSource = "OfferOperationService",
                 UserId = 1,
-                UserTypeId = 2
+                UserTypeId = 2,
+                OfferIds = new long[] { getOfferDatabaseIdDto.OfferId }
+
             };
             var service = GetServiceProxy();
-            var result = await service.GetAdditionalFeesDetailsAsync(request);
-            var additionalFees = new AdditionalFeesDetailsDto[result.AdditionalFeesDetails.Length];
-            for (int i = 0; i < result.AdditionalFeesDetails.Length; i++)
-            {
-                var fee = new AdditionalFeesDetailsDto();
-                fee.Amount = 123;
-                fee.OfferSalesforceId = "123";
-                additionalFees[i] = fee;
-            }
+            var result = await service.GetOfferDatabaseIdsAsync(request);
+            var offerDatabaseIdDto = new OfferDatabaseIdDto();
+            offerDatabaseIdDto.OfferDatabaseId = result.Data.FirstOrDefault().OfferDatabaseId;
 
-            return additionalFees;
+            return offerDatabaseIdDto;
         }
     }
 }

@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Api.Extensions;
 using Api.Filters;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api
 {
@@ -24,9 +27,9 @@ namespace Api
             {
                 //Register filter for globally
                 config.Filters.Add<LogActionFilter>();
-                config.Filters.Add<ModelValidationFilter>();
             });
             services.AddLogging(options => { options.AddDebug(); });
+           
             services.AddWebApiServicesExtension(Configuration);
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -37,6 +40,7 @@ namespace Api
             }
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>

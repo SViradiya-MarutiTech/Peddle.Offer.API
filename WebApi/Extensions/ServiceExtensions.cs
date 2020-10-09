@@ -26,6 +26,17 @@ using Microsoft.EntityFrameworkCore;
 using Application.Interfaces;
 using Peddle.Foundation.CacheManager.Core;
 using Application.Mappings;
+using RabbitMQ.Client;
+using System.Collections.Generic;
+using Peddle.MessageBroker.RabbitMQ.Connection;
+using Domain.Dtos.Configurations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using System.Runtime.Serialization.Json;
+using Domain.Dtos.Shared;
 
 namespace Api.Extensions
 {
@@ -44,7 +55,7 @@ namespace Api.Extensions
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new MappingProfile());
-              
+
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
@@ -69,8 +80,63 @@ namespace Api.Extensions
             services.RegisterInfraStructure(configuration);
 
             services.RegisterCaching(configuration);
+            services.RegisterTokenBasedAuthorization(configuration);
         }
 
+
+        private static void RegisterTokenBasedAuthorization(this IServiceCollection services,IConfiguration configuration)
+        {
+
+            services.Configure<JWTTokenConfiguration>(configuration.GetSection("JWTTokenConfiguration"));
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(o =>
+                {
+                    o.RequireHttpsMetadata = false;
+                    o.SaveToken = false;
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                        ValidIssuer = configuration["JWTTokenConfiguration:Issuer"],
+                        ValidAudience = configuration["JWTTokenConfiguration:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTTokenConfiguration:Key"]))
+                    };
+                    o.Events = new JwtBearerEvents()
+                    {
+                        OnAuthenticationFailed = c =>
+                        {
+                            c.NoResult();
+                            c.Response.StatusCode = 500;
+                            c.Response.ContentType = "text/plain";
+                            return c.Response.WriteAsync(c.Exception.ToString());
+                        },
+                        OnChallenge = context =>
+                        {
+                            context.HandleResponse();
+                            context.Response.StatusCode = 401;
+                            context.Response.ContentType = "application/json";
+                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("You are not Authorized"));
+                            return context.Response.WriteAsync(result);
+                        },
+                        OnForbidden = context =>
+                        {
+                            context.Response.StatusCode = 403;
+                            context.Response.ContentType = "application/json";
+                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("You are not authorized to access this resource"));
+                            return context.Response.WriteAsync(result);
+                        },
+                    };
+                });
+
+            services.AddSingleton<IJWTTokenManger, JWTTokenManager>();
+        }
         private static void RegisterInfraStructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IOfferOperationService, OfferOperationExternalService>();
@@ -86,21 +152,42 @@ namespace Api.Extensions
             services.Configure<MessageBrokerConnectionConfiguration>(
                 configuration.GetSection("MessageBrokerConfiguration"));
 
-            services.AddTransient<IMessageBrokerConnection>(service => new MessageBrokerConnection(
-                "publisher-connection", service.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>(),
-                service.GetRequiredService<ILogger<MessageBrokerConnection>>(),
-                service.GetRequiredService<ILoggerFactory>()
-            ));
+            services.AddTransient<IConnectionFactory>(
+               factory => new ConnectionFactory
+               {
+                   UserName = factory.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.RabbitMQUserName,
+                   Password = factory.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.RabbitMQPassword,
+                   HostName = factory.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.RabbitMQHostName,
+                   Port = factory.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.RabbitMQPortNumber,
+                   DispatchConsumersAsync = true,
+                   NetworkRecoveryInterval = TimeSpan.FromSeconds(10), // default is 5 seconds
+                   AutomaticRecoveryEnabled = true, // default is true
+                   TopologyRecoveryEnabled = true, // default is true
+                   HandshakeContinuationTimeout = TimeSpan.FromSeconds(10), // 10 seconds by default
+                   ContinuationTimeout = TimeSpan.FromSeconds(20), // 20 seconds by default
+                   RequestedConnectionTimeout = 30 * 1000, // default value is 30 * 1000 milliseconds
+                   RequestedHeartbeat = 60, // 60 seconds by default.
+                   ClientProperties = new Dictionary<string, object>
+                       { { "connection-name", "seller-instantoffer-service-subscriber" } }
+               });
+
+
+            services.AddTransient<IRabbitMqConnection>(
+                factory => new RabbitMqConnection(
+                    factory.GetRequiredService<IConnectionFactory>(),
+                    factory.GetRequiredService<ILogger<RabbitMqConnection>>(), 5));
+
+
         }
 
         private static void RegisterMessageBrokerPublishers(this IServiceCollection services)
         {
-            services.AddSingleton<IMessageBrokerPublisher>(provider =>
+            services.AddSingleton<IMessageBrokerPublisher>(service =>
             {
                 MessageBrokerPublisher messageBrokerPublisher = new MessageBrokerPublisher(
-                    provider.GetRequiredService<IMessageBrokerConnection>(),
-                    provider.GetRequiredService<ILoggerFactory>(),
-                    provider.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>()
+                    service.GetRequiredService<IRabbitMqConnection>(),
+                    service.GetRequiredService<ILoggerFactory>(),
+                    service.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>()
                 );
                 return messageBrokerPublisher;
             });
@@ -108,25 +195,17 @@ namespace Api.Extensions
 
         private static void RegisterMessageBrokerConsumers(this IServiceCollection services)
         {
-            // Register Message Broker Consumers
 
             services.AddTransient<IMessageBrokerSubscriber<RabbitMQMessage>>(service =>
                 new ExchangeSubscriber<RabbitMQMessage>(
-                    service.GetRequiredService<IMessageBrokerConnection>().RabbitMQConnection,
+                     service.GetRequiredService<IRabbitMqConnection>(),
                     OfferOperationQueueName,
                     service.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.ExchangeName,
                     service.GetRequiredService<ILogger<ExchangeSubscriber<RabbitMQMessage>>>(),
                     service.GetRequiredService<ISerializer<RabbitMQMessage>>()
                 ));
 
-            //Add new Consumer class same as below.
-            services.TryAddEnumerable(
-                new[]
-                {
-                    ServiceDescriptor.Transient<IMessageBrokerEventConsumer, OfferOperationsServiceCommonConsumer>(),
-                    //TODO: Add Other Consumer classes as above
-                }
-            );
+            services.AddSingleton<IMessageBrokerEventConsumer, InstantOfferMessageBrokerConsumer>();
         }
 
 

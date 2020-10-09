@@ -26,15 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Peddle.MessageBroker, Version=1.4.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\WebApi\Assemblies\Peddle.MessageBroker.dll</HintPath>
-    </Reference>
-    <Reference Include="Peddle.MessageBroker.RabbitMQ, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\WebApi\Assemblies\Peddle.MessageBroker.RabbitMQ.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 

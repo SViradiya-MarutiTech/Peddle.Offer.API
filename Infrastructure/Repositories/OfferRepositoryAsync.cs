@@ -63,7 +63,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        public List<InstantOffer> GetOffers()
+        public List<InstantOffer> GetInstantOffers()
         {
             return _instantOffersList;
         }

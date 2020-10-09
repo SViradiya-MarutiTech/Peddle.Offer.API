@@ -8,13 +8,16 @@ namespace Application.Exceptions
 {
     public class ValidationException : Exception
     {
-        public ValidationException() : base("One or more validation failures have occurred.")
+        
+        public ValidationException(string code) : base("One or more validation failures have occurred.")
         {
             Errors = new List<string>();
+            this.Code = code;
         }
         public List<string> Errors { get; }
-        public ValidationException(IEnumerable<ValidationFailure> failures)
-            : this()
+        public string Code { get; set; }
+        public ValidationException(string code,IEnumerable<ValidationFailure> failures)
+            : this(code)
         {
             foreach (var failure in failures)
             {

@@ -31,7 +31,6 @@ namespace Api.Filters
             string message = methodName + " Controller:" + controllerName + " Action:" + actionName + " Date: "
                             + DateTime.Now.ToString() + Environment.NewLine;
 
-            //saving the data in a text file called Log.txt
             _logger.LogInformation(message);
         }
     }
