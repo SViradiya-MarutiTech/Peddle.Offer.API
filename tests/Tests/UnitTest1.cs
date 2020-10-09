@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace Peddle.Offer.Tests
+namespace Tests
 {
     public class UnitTest1
     {

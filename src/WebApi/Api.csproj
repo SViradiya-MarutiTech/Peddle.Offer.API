@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>e839b799-ab92-4920-bc01-8a60c13d3a0a</UserSecretsId>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
    
   </PropertyGroup>
 
@@ -25,17 +26,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Peddle.MessageBroker">
-      <HintPath>Assemblies\Peddle.MessageBroker.dll</HintPath>
-    </Reference>
-    <Reference Include="Peddle.MessageBroker.RabbitMQ">
-      <HintPath>Assemblies\Peddle.MessageBroker.RabbitMQ.dll</HintPath>
-    </Reference>
-    <Reference Include="Polly">
-      <HintPath>Assemblies\Polly.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>
