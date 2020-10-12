@@ -1,12 +1,9 @@
 ﻿using Application.Interfaces;
-using Domain.Dtos.Commands;
 using Domain.Models.Requests;
 using Domain.Models.Responses;
 using MediatR;
-using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,7 +22,7 @@ namespace Application.UseCases.Accounts.Commands
             //VALIDATE USER AGAINST DATABASE HERE.
 
             //FOLLOWING CODE WILL GENERATE JWT TOKEN FOR VALID USER.
-            JwtSecurityToken jwtSecurityToken = await _jwtManager.GenerateJWToken();
+            JwtSecurityToken jwtSecurityToken = _jwtManager.GenerateJWToken();
             AuthenticationResponseDto response = new AuthenticationResponseDto();
             response.Id = 34542;
             response.JWToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);

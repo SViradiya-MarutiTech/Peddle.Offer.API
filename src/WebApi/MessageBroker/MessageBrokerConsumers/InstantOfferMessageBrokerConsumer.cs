@@ -5,14 +5,12 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Application.Interfaces.MessageBroker;
-using Application.UseCases.Offers.Commands.CreateOffer;
 using AutoMapper;
 using Domain.Dtos;
 using Domain.Dtos.Commands;
 using Domain.Dtos.MessageBroker;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Peddle.MessageBroker.Subscriber;
 
 namespace Api.MessageBroker.MessageBrokerConsumers
@@ -22,19 +20,16 @@ namespace Api.MessageBroker.MessageBrokerConsumers
         private readonly IMediator _mediator;
         private readonly IMessageBrokerSubscriber<RabbitMQMessage> _consumer;
         private readonly ILogger<InstantOfferMessageBrokerConsumer> _logger;
-        private readonly MessageBrokerConnectionConfiguration _configuration;
         private readonly IMapper _mapper;
 
         public InstantOfferMessageBrokerConsumer(
             IMediator mediator,
             IMessageBrokerSubscriber<RabbitMQMessage> consumer,
-            ILogger<InstantOfferMessageBrokerConsumer> logger,
-            IOptions<MessageBrokerConnectionConfiguration> messageBrokerConfiguration, IMapper mapper)
+            ILogger<InstantOfferMessageBrokerConsumer> logger, IMapper mapper)
         {
             _mediator = mediator;
             _consumer = consumer;
             _logger = logger;
-            _configuration = messageBrokerConfiguration.Value;
             var routingKeys = new List<string>
             {
                 "instant_offer_created",
@@ -52,26 +47,15 @@ namespace Api.MessageBroker.MessageBrokerConsumers
 
         private async Task Execute(Action function)
         {
-            await Task.Run(() =>
-            {
-                try
-                {
-                    function();
-                }
-                catch
-                {
-                }
-            });
+            await Task.Run(function);
         }
       
         public static T DeserializeXmlToObject<T>(string data)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));
-            using (StringReader strReader = new StringReader(data))
-            using (XmlTextReader xmlReader = new XmlTextReader(strReader))
-            {
-                return (T)serializer.Deserialize(xmlReader);
-            }
+            using StringReader strReader = new StringReader(data);
+            using XmlTextReader xmlReader = new XmlTextReader(strReader);
+            return (T)serializer.Deserialize(xmlReader);
         }
         private async Task ProcessExchangeMessage(RabbitMQMessage message)
         {

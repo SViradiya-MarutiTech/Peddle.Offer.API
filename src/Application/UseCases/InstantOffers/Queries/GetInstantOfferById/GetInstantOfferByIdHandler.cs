@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces.Repositories;
-using Application.Interfaces;
+using Application.Interfaces.CacheService;
 using Application.Models;
 using Domain.Dtos.Responses;
 
@@ -29,12 +29,14 @@ namespace Application.UseCases.Offers.Queries
             {
                 return _mapper.Map<InstantOfferModel>(offerCache);
             }
-            //Call Repository here.
-            // var offer = await _offerrepository.GetByIdAsync(request.Id);
-
+            
             var instantOffer = _instantOfferRepository.GetInstantOfferById(request.InstantOfferId);
 
-            if (instantOffer == null) throw new Exception($"Instant Offer Not Found.");
+            if (instantOffer == null)
+            {
+                throw new Exception("Instant Offer Not Found.");
+            }
+
             var instantOfferModel = _mapper.Map<InstantOfferModel>(instantOffer);
 
             _cachservice.UpsertItem(request.InstantOfferId.ToString(), instantOfferModel);

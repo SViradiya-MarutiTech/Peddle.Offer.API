@@ -1,11 +1,9 @@
-﻿using Domain.Dtos.Shared;
-using System.IdentityModel.Tokens.Jwt;
-using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
 
 namespace Application.Interfaces
 {
     public interface IJWTTokenManger
     {
-        Task<JwtSecurityToken> GenerateJWToken();
+        JwtSecurityToken GenerateJWToken();
     }
 }

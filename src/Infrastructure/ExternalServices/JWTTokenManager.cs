@@ -1,18 +1,14 @@
-﻿using Application.Interfaces;
-using Domain.Dtos.Configurations;
-using FluentValidation;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
+using Application.Interfaces;
+using Domain.Dtos.Configurations;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
-namespace Domain.Dtos.Shared
+namespace Infrastructure.ExternalServices
 {
     public class JWTTokenManager : IJWTTokenManger
     {
@@ -24,16 +20,13 @@ namespace Domain.Dtos.Shared
             _jwtSettings = jwtSettings.Value;
         }
 
-        //PASS APPLICAtION USER AS PARAMETER TO GENERATE TOKEN.
-        public async Task<JwtSecurityToken> GenerateJWToken()
+        //pass application user as parameter to generate token.
+        public JwtSecurityToken GenerateJWToken()
         {
-            //GET ROLES AND USERCLAIMS FROM IDENITITYSERVER USERMANAGER 
+            //get roles and userclaims from idenitityserver usermanager 
 
             var roleClaims = new List<Claim>();
             roleClaims.Add(new Claim("roles", "seller"));
-
-
-
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, "Seller Name"),
@@ -53,17 +46,5 @@ namespace Domain.Dtos.Shared
                 signingCredentials: signingCredentials);
             return jwtSecurityToken;
         }
-      
-        private string RandomTokenString()
-        {
-            using (var rngCryptoServiceProvider = new RNGCryptoServiceProvider())
-            {
-                var randomBytes = new byte[40];
-                rngCryptoServiceProvider.GetBytes(randomBytes);
-                // convert random bytes to hex string
-                return BitConverter.ToString(randomBytes).Replace("-", "");
-            }
-        }
-
     }
 }

@@ -12,15 +12,12 @@ namespace Api.MessageBroker
     {
         private readonly ILogger<MessageBrokerListener> _log;
         private readonly IEnumerable<IMessageBrokerEventConsumer> _consumers;
-        private ILoggerFactory _factory;
 
         public MessageBrokerListener(ILogger<MessageBrokerListener> log,
-            IEnumerable<IMessageBrokerEventConsumer> consumers,
-            ILoggerFactory factory)
+            IEnumerable<IMessageBrokerEventConsumer> consumers)
         {
             _log = log;
             _consumers = consumers;
-            _factory = factory;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

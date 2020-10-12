@@ -1,10 +1,10 @@
-﻿using OfferOperationService;
-using Application.Interfaces.ExternalServices;
+﻿using Application.Interfaces.ExternalServices;
 using Domain.Dtos;
-using System.ServiceModel;
 using System.Threading.Tasks;
 using Domain.Dtos.ExternalServices;
 using System.Linq;
+using OfferOperationService;
+using System.ServiceModel;
 
 namespace Infrastructure.ExternalServices
 {
@@ -16,6 +16,7 @@ namespace Infrastructure.ExternalServices
 
         public IOfferService GetServiceProxy()
         {
+            //https://github.com/dotnet/wcf/issues/2546
             BasicHttpBinding httpBinding = new BasicHttpBinding();
             EndpointAddress endpoint = new EndpointAddress("<YOUR SVC URL>");
             ChannelFactory<IOfferService> factory = new ChannelFactory<IOfferService>(httpBinding, endpoint);
@@ -32,7 +33,7 @@ namespace Infrastructure.ExternalServices
                 RequestSource = "OfferOperationService",
                 UserId = 1,
                 UserTypeId = 2,
-                OfferIds = new long[] { getOfferDatabaseIdDto.OfferId }
+                OfferIds = new[] { getOfferDatabaseIdDto.OfferId }
 
             };
             var service = GetServiceProxy();

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
 
 namespace Api.Filters
 {
@@ -29,7 +29,7 @@ namespace Api.Filters
             var controllerName = routeData.Values["controller"];
             var actionName = routeData.Values["action"];
             string message = methodName + " Controller:" + controllerName + " Action:" + actionName + " Date: "
-                            + DateTime.Now.ToString() + Environment.NewLine;
+                            + DateTime.Now.ToString(CultureInfo.InvariantCulture) + Environment.NewLine;
 
             _logger.LogInformation(message);
         }

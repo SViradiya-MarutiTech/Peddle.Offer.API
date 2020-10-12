@@ -8058,6 +8058,8 @@ namespace OfferOperationService
         
         private System.Nullable<decimal> OfferAdjustedAmountField;
         
+        private string OfferAmountUpdateReasonField;
+        
         private long OfferDatabaseIdField;
         
         private string OfferTypeField;
@@ -8406,6 +8408,19 @@ namespace OfferOperationService
             set
             {
                 this.OfferAdjustedAmountField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string OfferAmountUpdateReason
+        {
+            get
+            {
+                return this.OfferAmountUpdateReasonField;
+            }
+            set
+            {
+                this.OfferAmountUpdateReasonField = value;
             }
         }
         

@@ -6,9 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Api.Extensions;
 using Api.Filters;
 using Microsoft.Extensions.Logging;
-using System.Net;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Api
 {

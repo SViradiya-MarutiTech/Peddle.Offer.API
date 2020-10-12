@@ -1,16 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Peddle.Offer.WebApi.Controllers;
 using System;
 using Microsoft.Extensions.Logging;
 using Application.Models;
 using Domain.Dtos.Requests;
-using Domain.Dtos.Responses;
-
 using AutoMapper;
 using Domain.Dtos.Commands;
 using Api.Models;
-using Api.Filters;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers.v1

@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Domain.Models.Responses
 {
@@ -13,7 +11,6 @@ namespace Domain.Models.Responses
         public List<string> Roles { get; set; }
         public bool IsVerified { get; set; }
         public string JWToken { get; set; }
-        [JsonIgnore]
-        public string RefreshToken { get; set; }
+        
     }
 }

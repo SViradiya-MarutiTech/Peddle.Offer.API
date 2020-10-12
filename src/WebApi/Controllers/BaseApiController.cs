@@ -1,7 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-namespace Peddle.Offer.WebApi.Controllers
+
+namespace Api.Controllers
 {
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]

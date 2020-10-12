@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Application.Interfaces;
+using Application.Interfaces.CacheService;
 using Domain.Dtos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

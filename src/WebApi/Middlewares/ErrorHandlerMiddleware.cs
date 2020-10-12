@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
@@ -11,10 +10,11 @@ using FluentValidation;
 
 namespace Api.Middlewares
 {
-    public class ErrorHandlerMiddleware
+    public  class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ErrorHandlerMiddleware> _logger;
+
         public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
         {
             _next = next;
@@ -31,7 +31,7 @@ namespace Api.Middlewares
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
-                var errorResponseModel = new ErrorResponse<string>()
+                var errorResponseModel = new ErrorResponse<string>
                 {
                     Message = error?.Message
                 };
@@ -44,16 +44,18 @@ namespace Api.Middlewares
                         errorResponseModel.Code = e.Errors.First().ErrorCode;
                         errorResponseModel.Message = e.Errors.First().ErrorMessage;
                         break;
-             
+
                     default:
                         // unhandled error
                         response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                        errorResponseModel.Code = "unhandled_exception";
+                        errorResponseModel.Message = "some thing went wrong!";
                         break;
                 }
 
                 var result = JsonSerializer.Serialize(errorResponseModel);
                 _logger.LogError(result);
-                 await response.WriteAsync(result);
+                await response.WriteAsync(result);
             }
         }
     }

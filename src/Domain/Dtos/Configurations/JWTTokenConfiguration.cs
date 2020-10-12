@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Dtos.Configurations
+﻿namespace Domain.Dtos.Configurations
 {
    public  class JWTTokenConfiguration
     {

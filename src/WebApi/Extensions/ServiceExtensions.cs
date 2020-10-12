@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Api.MessageBroker.MessageBrokerConsumers;
 using AutoMapper;
 using FluentValidation;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Peddle.MessageBroker.RabbitMQ.Subscriber;
 using Peddle.MessageBroker.Serializer;
 using Peddle.MessageBroker.Subscriber;
-using Application.Common.Behaviours;
 using Application.Interfaces.ExternalServices;
 using Application.Interfaces.MessageBroker;
 using Application.Interfaces.Repositories;
@@ -21,10 +19,8 @@ using Infrastructure.ExternalServices;
 using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Application.Interfaces;
-using Peddle.Foundation.CacheManager.Core;
 using Application.Mappings;
 using RabbitMQ.Client;
 using System.Collections.Generic;
@@ -33,10 +29,10 @@ using Domain.Dtos.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Application.Behaviours;
+using Application.Interfaces.CacheService;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using System.Runtime.Serialization.Json;
-using Domain.Dtos.Shared;
 
 namespace Api.Extensions
 {
@@ -114,22 +110,25 @@ namespace Api.Extensions
                         {
                             c.NoResult();
                             c.Response.StatusCode = 500;
-                            c.Response.ContentType = "text/plain";
-                            return c.Response.WriteAsync(c.Exception.ToString());
+                            c.Response.ContentType = "application/json";
+                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("server_error","Invalid Token",""));
+
+                            return c.Response.WriteAsync(result);
+                            
                         },
                         OnChallenge = context =>
                         {
                             context.HandleResponse();
                             context.Response.StatusCode = 401;
                             context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("You are not Authorized"));
+                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("unauthorized","Invalid Token",""));
                             return context.Response.WriteAsync(result);
                         },
                         OnForbidden = context =>
                         {
                             context.Response.StatusCode = 403;
                             context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("You are not authorized to access this resource"));
+                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("access_forbidden","Access Forbidden",""));
                             return context.Response.WriteAsync(result);
                         },
                     };
@@ -175,7 +174,7 @@ namespace Api.Extensions
             services.AddTransient<IRabbitMqConnection>(
                 factory => new RabbitMqConnection(
                     factory.GetRequiredService<IConnectionFactory>(),
-                    factory.GetRequiredService<ILogger<RabbitMqConnection>>(), 5));
+                    factory.GetRequiredService<ILogger<RabbitMqConnection>>()));
 
 
         }

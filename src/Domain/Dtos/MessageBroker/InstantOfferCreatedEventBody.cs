@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Dtos.MessageBroker
+﻿namespace Domain.Dtos.MessageBroker
 {
    public class InstantOfferCreatedEventBody
     {

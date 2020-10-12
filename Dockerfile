@@ -9,10 +9,11 @@ COPY ["/src/WebApi/Api.csproj", "WebApi/"]
 COPY ["/src/Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["/src/Application/Application.csproj", "Application/"]
 COPY ["/src/Domain/Domain.csproj", "Domain/"]
+COPY ["packages","/root/.nuget/packages"]
 COPY ["NuGet.Config","NuGet.Config"]
-
-RUN dotnet restore "/src/WebApi/Api.csproj"
 COPY . .
+RUN dotnet restore "/src/WebApi/Api.csproj"
+
 WORKDIR "/src/WebApi"
 RUN dotnet build "Api.csproj" -c Release -o /app/build
 

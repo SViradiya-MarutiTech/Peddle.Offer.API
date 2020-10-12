@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Peddle.Foundation.CacheManager.Core;
 
-namespace Application.Interfaces
+namespace Application.Interfaces.CacheService
 {
     public interface ICacheService<T>
     {

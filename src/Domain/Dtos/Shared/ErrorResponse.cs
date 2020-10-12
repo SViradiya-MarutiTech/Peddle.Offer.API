@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Domain.Dtos
 {
@@ -8,7 +7,7 @@ namespace Domain.Dtos
         public ErrorResponse()
         {
         }
-        public ErrorResponse(T data, string code, string message = null)
+        public ErrorResponse(string code, string message,T data )
         {
             Message = message;
             Data = data;
@@ -19,8 +18,9 @@ namespace Domain.Dtos
             Message = message;
         }
         public string Message { get; set; }
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        
         public string Code { get; set; }
+        [JsonIgnore]
         public T Data { get; set; }
     }
 }
