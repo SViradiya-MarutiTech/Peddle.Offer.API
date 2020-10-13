@@ -11,7 +11,7 @@ using Peddle.Foundation.CacheManager.Redis;
 
 namespace Infrastructure.ExternalServices
 {
-    public class CacheService<T> : ICacheService<T>
+    public class CacheService<T> : ICacheService<T> where T : class
     {
         private readonly ILogger<CacheService<T>> _log;
         private readonly string _region = "OfferOperationsService";
@@ -25,7 +25,13 @@ namespace Infrastructure.ExternalServices
             _log = log;
             InitializeCacheManager();
         }
-
+        private void InitializeCacheManager()
+        {
+            _cacheManager = _cacheManager ?? (_cacheManager = CacheFactory.Build<T>(settings => settings
+                .WithMemoryCacheHandle()
+                .And
+                .WithRedisCacheHandle(_configurationSettings.RedisConnectionString)));
+        }
         public List<T> GetItems(List<string> keys)
         {
             IList<CacheItem<T>> cacheItems = new List<CacheItem<T>>();
@@ -92,14 +98,6 @@ namespace Infrastructure.ExternalServices
             {
                 _log.LogWarning(exception, null, "Redis failed to remove the key " + key);
             }
-        }
-
-        private void InitializeCacheManager()
-        {
-            _cacheManager = _cacheManager ?? (_cacheManager = CacheFactory.Build<T>(settings => settings
-                .WithMemoryCacheHandle()
-                .And
-                .WithRedisCacheHandle(_configurationSettings.RedisConnectionString)));
         }
     }
 }

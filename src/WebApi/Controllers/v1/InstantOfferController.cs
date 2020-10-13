@@ -25,37 +25,18 @@ namespace Api.Controllers.v1
         }
 
         [HttpGet("{InstantOfferId}")]
-        public async Task<IActionResult> Get([FromRoute]GetInstantOfferModel model)
+        public async Task<IActionResult> Get([FromRoute] GetInstantOfferModel model)
         {
-            try
-            {
-                var instantOfferQueryRequest = _mapper.Map<GetInstantOfferRequest>(model);
-                return Ok(await Mediator.Send(instantOfferQueryRequest));
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Some thing went wrong,Exception:{ex}");
-                throw;
-            }
+            var instantOfferQueryRequest = _mapper.Map<GetInstantOfferRequest>(model);
+            return Ok(await Mediator.Send(instantOfferQueryRequest));
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateInstantOffer(CreateInstantOfferModel model)
         {
-            try
-            {
-                var getInstantOfferCommandRequest = _mapper.Map<CreateInstantOfferRequest>(model);
 
-                return CreatedAtAction(nameof(CreateInstantOffer),await Mediator.Send(getInstantOfferCommandRequest));
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Some thing went wrong, Exception:{ex.Message}");
-                throw;
-            }
+            var getInstantOfferCommandRequest = _mapper.Map<CreateInstantOfferRequest>(model);
+            return CreatedAtAction(nameof(CreateInstantOffer), await Mediator.Send(getInstantOfferCommandRequest));
         }
     }
 }

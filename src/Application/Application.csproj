@@ -16,17 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UseCases\Accounts\Queries\" />
     <Folder Include="UseCases\OfferDatabaseIds\Commands\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Peddle.MessageBroker">
-      <HintPath>Assambly\Peddle.MessageBroker.dll</HintPath>
-    </Reference>
-    <Reference Include="Peddle.MessageBroker.RabbitMQ">
-      <HintPath>Assambly\Peddle.MessageBroker.RabbitMQ.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

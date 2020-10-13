@@ -5,19 +5,22 @@ using Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Interfaces.CacheService;
 
 namespace Infrastructure.Repositories
 {
-    public class OfferRepositoryAsync : GenericRepositoryAsync<InstantOffer>, IInstantOfferRepository
+    public class InstantOfferRepositoryAsync : GenericRepositoryAsync<InstantOffer>, IInstantOfferRepository
 
     {
         private readonly DbSet<InstantOffer> _instantOffers;
         private List<InstantOffer> InstantOffersList { get; set; }
+        private readonly ICacheService<InstantOffer> _cacheInstantOfferService;
 
-        public OfferRepositoryAsync(ApplicationDbContext dbContext) : base(dbContext)
+        public InstantOfferRepositoryAsync(ApplicationDbContext dbContext, ICacheService<InstantOffer> cacheInstantOfferService) : base(dbContext)
         {
             _instantOffers = dbContext.Set<InstantOffer>();
             InstantOffersList = MockData();
+            _cacheInstantOfferService = cacheInstantOfferService;
         }
 
         private List<InstantOffer> MockData()
@@ -76,6 +79,9 @@ namespace Infrastructure.Repositories
 
         public async Task<InstantOffer> GetInstantOfferById(int instantOfferId)
         {
+            var instantOffer = _cacheInstantOfferService.GetItem(instantOfferId.ToString());
+            if (instantOffer != null)
+                return instantOffer;
             return InstantOffersList.Find(i => i.Id == instantOfferId);
         }
 
@@ -84,7 +90,9 @@ namespace Infrastructure.Repositories
             if (InstantOffersList.All(i => i.Id != instantOffer.Id))
             {
                 InstantOffersList.Add(instantOffer);
+
             }
+            _cacheInstantOfferService.UpsertItem(instantOffer.Id.ToString(), instantOffer);
         }
 
         #endregion

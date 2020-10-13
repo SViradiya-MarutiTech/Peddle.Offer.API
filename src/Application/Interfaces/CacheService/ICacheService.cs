@@ -3,7 +3,7 @@ using Peddle.Foundation.CacheManager.Core;
 
 namespace Application.Interfaces.CacheService
 {
-    public interface ICacheService<T>
+    public interface ICacheService<T> where T : class
     {
         List<T> GetItems(List<string> keys);
         T GetItem(string key);

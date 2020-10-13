@@ -72,70 +72,12 @@ namespace Api.Extensions
                 config.ReportApiVersions = true;
             });
             services.AddScoped(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
-            services.AddTransient(typeof(IInstantOfferRepository), typeof(OfferRepositoryAsync));
+            services.AddTransient(typeof(IInstantOfferRepository), typeof(InstantOfferRepositoryAsync));
             services.RegisterInfraStructure(configuration);
 
             services.RegisterCaching(configuration);
-            services.RegisterTokenBasedAuthorization(configuration);
         }
 
-
-        private static void RegisterTokenBasedAuthorization(this IServiceCollection services,IConfiguration configuration)
-        {
-
-            services.Configure<JWTTokenConfiguration>(configuration.GetSection("JWTTokenConfiguration"));
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(o =>
-                {
-                    o.RequireHttpsMetadata = false;
-                    o.SaveToken = false;
-                    o.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = configuration["JWTTokenConfiguration:Issuer"],
-                        ValidAudience = configuration["JWTTokenConfiguration:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTTokenConfiguration:Key"]))
-                    };
-                    o.Events = new JwtBearerEvents()
-                    {
-                        OnAuthenticationFailed = c =>
-                        {
-                            c.NoResult();
-                            c.Response.StatusCode = 500;
-                            c.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("server_error","Invalid Token",""));
-
-                            return c.Response.WriteAsync(result);
-                            
-                        },
-                        OnChallenge = context =>
-                        {
-                            context.HandleResponse();
-                            context.Response.StatusCode = 401;
-                            context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("unauthorized","Invalid Token",""));
-                            return context.Response.WriteAsync(result);
-                        },
-                        OnForbidden = context =>
-                        {
-                            context.Response.StatusCode = 403;
-                            context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new ErrorResponse<string>("access_forbidden","Access Forbidden",""));
-                            return context.Response.WriteAsync(result);
-                        },
-                    };
-                });
-
-            services.AddSingleton<IJWTTokenManger, JWTTokenManager>();
-        }
         private static void RegisterInfraStructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IOfferOperationService, OfferOperationExternalService>();
@@ -151,7 +93,7 @@ namespace Api.Extensions
             services.Configure<MessageBrokerConnectionConfiguration>(
                 configuration.GetSection("MessageBrokerConfiguration"));
 
-            services.AddTransient<IConnectionFactory>(
+            services.AddSingleton<IConnectionFactory>(
                factory => new ConnectionFactory
                {
                    UserName = factory.GetRequiredService<IOptions<MessageBrokerConnectionConfiguration>>().Value.RabbitMQUserName,
@@ -167,7 +109,7 @@ namespace Api.Extensions
                    RequestedConnectionTimeout = 30 * 1000, // default value is 30 * 1000 milliseconds
                    RequestedHeartbeat = 60, // 60 seconds by default.
                    ClientProperties = new Dictionary<string, object>
-                       { { "connection-name", "seller-instantoffer-service-subscriber" } }
+                       { { "connection-name", "seller-instantoffer-service" } }
                });
 
 

@@ -24,13 +24,8 @@ namespace Application.UseCases.Offers.Queries
 
         public async Task<InstantOfferModel> Handle(GetInstantOfferRequest request, CancellationToken cancellationToken)
         {
-            var offerCache = _cachservice.GetItem(request.InstantOfferId.ToString());
-            if (offerCache != null)
-            {
-                return _mapper.Map<InstantOfferModel>(offerCache);
-            }
-            
-            var instantOffer = _instantOfferRepository.GetInstantOfferById(request.InstantOfferId);
+
+            Domain.Entities.InstantOffer instantOffer = await _instantOfferRepository.GetInstantOfferById(request.InstantOfferId);
 
             if (instantOffer == null)
             {
@@ -38,8 +33,6 @@ namespace Application.UseCases.Offers.Queries
             }
 
             var instantOfferModel = _mapper.Map<InstantOfferModel>(instantOffer);
-
-            _cachservice.UpsertItem(request.InstantOfferId.ToString(), instantOfferModel);
             return instantOfferModel;
         }
     }
